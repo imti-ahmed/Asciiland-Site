@@ -10,9 +10,27 @@
 </head>
 <body>
   <header class="top">
-    <a class="link pill left" href="#about">/ About</a>
-    <h1 class="brand">/ ASCIILAND /</h1>
-    <a class="link pill right" href="#story">Story /</a>
+    <div class="menu left">
+      <button class="link pill" type="button" aria-expanded="false">/ About</button>
+      <div class="card-wrap">
+        <div class="card">
+          <p>Asciiland is a tiny digital forest made from nothing but text symbols. Just a small experiment in making things on the internet for the fun of it.</p>
+          <p>Made by <a href="https://www.imtiyazahmed.com" target="_blank" rel="noopener">Imtiyaz Ahmed</a>.</p>
+        </div>
+      </div>
+    </div>
+    <h1 class="brand" aria-label="Asciiland">/ <span id="brand-text">ASCIILAND</span> /</h1>
+    <div class="menu right">
+      <button class="link pill" type="button" aria-expanded="false">Story /</button>
+      <div class="card-wrap">
+        <div class="card">
+          <h3>How to play:</h3>
+          <p>Hold and drag a tree to blow wind through it, and press to shake its leaves loose. Back and Next move between trees.</p>
+          <h3>How it's built:</h3>
+          <p>Each tree is an illustration turned into text symbols, built with plain HTML, CSS and JavaScript.</p>
+        </div>
+      </div>
+    </div>
   </header>
 
   <!-- The empty space: each ASCII piece is drawn here, one at a time. -->

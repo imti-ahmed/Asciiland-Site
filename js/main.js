@@ -4,6 +4,8 @@
 // a tree only jumps from one end of the loop to the other while it is out of sight.
 import { pieces } from "./engine.js";
 import "./counter.js";
+import "./brand.js";
+import "./menus.js";
 
 // Pieces show in this order. Add new ones here.
 import "./pieces/spring-tree.js";

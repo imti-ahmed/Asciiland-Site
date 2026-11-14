@@ -9,6 +9,34 @@ Newest entry on top. Each entry: date, what changed, anything to remember.
 - Decide on page title/intro wording and overall look of the grid.
 - Per-piece tuning controls if wanted (shake strength, leaf count, pile size, wind sensitivity).
 
+## 2026-11-14 — Story card: how it's used and built
+- Story card is two short paragraphs (tried a four-point list first, then shortened): how to play (drag for wind, press to shake, Back/Next), and how it was built (illustrations turned into symbols, plain HTML, CSS and JavaScript).
+- Story text is left aligned (tried right aligned, reverted). Each paragraph has a black bold headline: "How to play:" and "How it's built:" (with a colon). The About card has no headlines yet.
+- Owner to review the wording.
+
+## 2026-11-14 — About text replaced
+- About card now reads the owner's new copy: "Asciiland is a tiny digital forest made from nothing but text symbols. Just a small experiment in making things on the internet for the fun of it." then "Made by Imtiyaz Ahmed." (name still black, still links to imtiyazahmed.com). Story card unchanged.
+- Assumed this text is for the About card.
+
+## 2026-11-14 — Card text
+- About: "Asciiland is a small playground of living trees made of text symbols. It's a fun experiment to showcase art using simple digital experimentation." then "Ideated and built by Imtiyaz Ahmed." The name is black and links to https://www.imtiyazahmed.com (opens in a new tab, underlines on hover).
+- Story: now holds the "Hold and drag to blow wind through a tree. Press it to shake its leaves loose." line (was a placeholder).
+- I tidied the owner's wording slightly ("It's a fun experiment") and added a full stop after the name. The other card text is still placeholder-quality; owner to review.
+
+## 2026-11-14 — About and Story cards
+- Hovering About or Story turns its text black and opens a white card below it. The card grows from the corner nearest its pill (top-left for About, top-right for Story so it stays on screen), scaling evenly along its diagonal with a small springy overshoot; it shrinks back quickly on exit.
+- The text is not scaled with the card: the empty card grows first, the text shows right after (0.13s in, as the card reaches full size); on exit the text vanishes first, then the card shrinks.
+- Card motion retuned to feel smoother but still springy: a true damped-spring curve over 0.6s (soft start, about 8% overshoot, gentle settle), smooth 0.22s exit. Text fades in at 0.14s.
+- Touch: tap opens, tapping elsewhere closes. Escape closes. The pills are now buttons, not links.
+- Card text is placeholder: About has a short description I wrote, Story says "Placeholder". Owner to supply the real words.
+- Not checked in a browser.
+
+## 2026-11-14 — Title hover: scramble to credit
+- Hovering `/ ASCIILAND /` scrambles the name (not the slashes) through ASCII symbols and settles on `/ MADE BY IMTIYAZ /`; moving away scrambles it back. On touch screens a tap shows it and tapping elsewhere restores it.
+- The text opens out from its centre and the letters lock in from the middle outwards (not left to right). One change takes about 0.38s.
+- Text and timing are at the top of `js/brand.js`. People who ask their device for less motion get an instant swap.
+- Not checked in a browser. The title is wider while the credit shows, but stays centred.
+
 ## 2026-11-14 — Favicon
 - Added the owner's pink circle with a white slash as the browser-tab icon: `assets/icons/favicon.png` (renamed from `Group 2.png`).
 - The image is small; a larger export (at least 180px) would look sharper on high-resolution screens and phone home screens.
