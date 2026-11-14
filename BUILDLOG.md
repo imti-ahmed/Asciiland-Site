@@ -9,6 +9,10 @@ Newest entry on top. Each entry: date, what changed, anything to remember.
 - Decide on page title/intro wording and overall look of the grid.
 - Per-piece tuning controls if wanted (shake strength, leaf count, pile size, wind sensitivity).
 
+## 2026-11-14 — Favicon
+- Added the owner's pink circle with a white slash as the browser-tab icon: `assets/icons/favicon.png` (renamed from `Group 2.png`).
+- The image is small; a larger export (at least 180px) would look sharper on high-resolution screens and phone home screens.
+
 ## 2026-11-14 — Real visitor counter
 - The visitor pill now shows a real count, starting from 0, using the free outside service abacus.jasoncameron.dev (`js/counter.js`). Owner's choices: outside service, every page load counts, start at 0.
 - Live site: each page load adds 1. Localhost: reads only, so development doesn't inflate it. If the service fails, the pill shows a dash.
