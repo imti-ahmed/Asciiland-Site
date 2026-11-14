@@ -29,6 +29,7 @@ var slots = [];             // { canvas, inst }
 var n = 0, size = 0, spacing = 0;
 var pos = 0, posV = 0;      // which tree is in the middle (a fraction while sliding) and its speed; never wraps back
 var target = 0;             // the tree we are heading for
+var introDone = false;      // set once the page-load animation has finished
 
 function sizeOf() {
   return Math.max(200, Math.floor(Math.min(stage.clientWidth, stage.clientHeight, MAX_ART_SIZE)));
@@ -38,6 +39,7 @@ function addSlot(piece) {
   var canvas = document.createElement("canvas");
   canvas.setAttribute("aria-label", piece.title + ": " + (piece.hint || ""));
   canvas.style.width = canvas.style.height = size + "px";
+  if (introDone) canvas.classList.add("show");           // trees added after the intro just fade in
   stage.appendChild(canvas);
   var inst = piece.create(canvas);
   inst.resize(size);
@@ -123,5 +125,26 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 
+// Page load, in this order: (1) the top and bottom bars fade in, (2) the middle tree, (3) the trees on both
+// sides in pairs: the nearest left and right trees together, then the next pair, and so on.
+var MIDDLE_AT = 280, SIDES_AT = 700, PAIR_GAP = 220;       // when each step starts, in milliseconds
+function intro() {
+  var calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function showAll() { slots.forEach(function (s) { s.canvas.classList.add("show"); }); }
+  document.body.classList.add("ready");
+  if (calm) { showAll(); introDone = true; return; }
+  setTimeout(function () { slots[0].canvas.classList.add("show"); }, MIDDLE_AT);   // the middle tree comes after the bars
+  var steps = {};                                            // trees grouped by how far they are from the middle
+  for (var i = 1; i < n; i++) if (onScreen(i)) (steps[Math.round(Math.abs(offset(i)))] = steps[Math.round(Math.abs(offset(i)))] || []).push(i);
+  var dists = Object.keys(steps).map(Number).sort(function (a, b) { return a - b; });
+  dists.forEach(function (d, k) {                            // the left and right tree at each distance appear together
+    setTimeout(function () { steps[d].forEach(function (i) { slots[i].canvas.classList.add("show"); }); }, SIDES_AT + k * PAIR_GAP);
+  });
+  setTimeout(function () { showAll(); introDone = true; }, SIDES_AT + dists.length * PAIR_GAP + 200);   // anything off-screen
+}
+
 layout();
 requestAnimationFrame(loop);
+// wait for the font and a couple of frames, so the first thing you see is the finished page fading in
+var fontsReady = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+fontsReady.then(function () { requestAnimationFrame(function () { requestAnimationFrame(intro); }); });

@@ -9,6 +9,11 @@ Newest entry on top. Each entry: date, what changed, anything to remember.
 - Decide on page title/intro wording and overall look of the grid.
 - Per-piece tuning controls if wanted (shake strength, leaf count, pile size, wind sensitivity).
 
+## 2026-11-14 — Page load animation
+- On load, in order: (1) the top bar and bottom bar fade in (0.45s), (2) the middle tree (Spring) at 0.28s, (3) the other on-screen trees in left-right pairs from 0.7s, 0.22s apart: the nearest left and right together, then the next pair. Anything off-screen is shown at the end.
+- Waits for the Aileron font before starting. People who ask for reduced motion see everything at once.
+- Not checked in a browser. Timing numbers are in `intro()` in `js/main.js` (`MIDDLE_AT`, `SIDES_AT`, `PAIR_GAP`).
+
 ## 2026-11-14 — Story card: how it's used and built
 - Story card is two short paragraphs (tried a four-point list first, then shortened): how to play (drag for wind, press to shake, Back/Next), and how it was built (illustrations turned into symbols, plain HTML, CSS and JavaScript).
 - Story text is left aligned (tried right aligned, reverted). Each paragraph has a black bold headline: "How to play:" and "How it's built:" (with a colon). The About card has no headlines yet.

@@ -98,6 +98,13 @@ body {
   overflow: hidden;
 }
 /* Each tree is placed by JS (js/main.js): centred, then slid left or right in an endless loop. */
+/* Page load: the bars and the middle tree fade in together, then the other trees one by one (js/main.js adds .ready / .show). */
+.top, .bar { opacity: 0; transition: opacity 0.45s ease; }
+body.ready .top, body.ready .bar { opacity: 1; }
+.stage canvas { opacity: 0; transition: opacity 0.45s ease; }
+.stage canvas.show { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .top, .bar, .stage canvas { transition: none; } }
+
 .stage canvas { position: absolute; left: 0; top: 50%; display: block; touch-action: none; cursor: grab; -webkit-tap-highlight-color: transparent; will-change: transform; }
 .stage canvas:active { cursor: grabbing; }
 

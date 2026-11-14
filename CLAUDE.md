@@ -27,6 +27,7 @@ A small website of living ASCII-art trees you can interact with. Pure digital-ar
 - `js/tree.js` — the shared tree engine (`makeTree(settings)`): turns a picture or painted shape into symbols, wind, shaking, falling bits and the ground pile. The settings are documented at the top of the file.
 - `js/painters.js` — draws tree shapes in code (currently the conifer) for trees that have no picture.
 - `js/brand.js` — the title's hover effect: the name scrambles through ASCII symbols into the credit line and back.
+- Page load: the bars fade in first, then the middle tree, then the other trees in left-right pairs, nearest first (`intro()` in `js/main.js`). New pieces get this automatically.
 - `js/menus.js` — the About and Story pills: hover or tap opens a card below. The grow/shrink animation is CSS (`.card` in `css/style.css`).
 - `js/counter.js` — the visitor pill: adds 1 per page load on the live site, only reads the number on localhost.
 - `js/pieces/<name>.js` — one small file per tree: just its settings (symbols, colours, falling bits) passed to `makeTree`.
