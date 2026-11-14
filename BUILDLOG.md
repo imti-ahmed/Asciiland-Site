@@ -1,0 +1,249 @@
+# Build Log
+
+Newest entry on top. Each entry: date, what changed, anything to remember.
+
+## Up next
+- Better tree artwork (waiting on the owner's direction: pictures vs code).
+- Make the Pine more Christmassy if wanted.
+- Carousel layout: show several trees side by side in the stage.
+- Decide on page title/intro wording and overall look of the grid.
+- Per-piece tuning controls if wanted (shake strength, leaf count, pile size, wind sensitivity).
+
+## 2026-11-14 — Real visitor counter
+- The visitor pill now shows a real count, starting from 0, using the free outside service abacus.jasoncameron.dev (`js/counter.js`). Owner's choices: outside service, every page load counts, start at 0.
+- Live site: each page load adds 1. Localhost: reads only, so development doesn't inflate it. If the service fails, the pill shows a dash.
+- Checked: the service answers and allows calls from web pages (tested with a throwaway key, not the real one). Not checked in a browser.
+- Risks: the count lives on someone else's free service (could be slow, reset or shut down), and anyone can inflate it by calling the address. To restart from 0, change `KEY` in `js/counter.js`.
+
+## 2026-11-14 — Visitor number bold
+- In the visitor pill the number is now bold (700) and "Cuties Visited" is semibold (600), swapped from the Figma frame.
+
+## 2026-11-14 — Single slashes, ASCII heart
+- Top links now read `/ About` and `Story /` (one slash, not two).
+- Visitor pill: the pink pixel image is replaced by an ASCII face `(^_^)` in bright pink monospace (tried a `<3` heart first). Its strokes are thickened beyond the font's bold so it reads clearly. The image file was deleted.
+
+## 2026-11-14 — About and Story are pills
+- The two top links now use the same white pill style as Back/Next (differs from the Figma frame, by the owner's choice). Their text stays where it was.
+- Their text is now bold (700) instead of semibold, still grey.
+- They still link nowhere.
+
+## 2026-11-14 — Terracotta Tree leaves are +
+- Swapped the numbers for `+` (leaves, falling leaves and ground pile; tried `~` first). The `leafSet` engine setting stays, unused.
+
+## 2026-11-14 — Terracotta Tree leaves are numbers
+- New engine setting `leafSet`: each leaf is a random symbol from a list. Terracotta Tree uses `0123456789`, so its crown, falling leaves and ground pile are all digits. Each leaf keeps its number (same on every load).
+- Not checked in a browser.
+
+## 2026-11-14 — Bigger * on the Pink Tree
+- New engine settings `leafScale` and `leafDy`. Pink Tree's `*` leaves are drawn 45% bigger and nudged down a little so they sit centred; its falling leaves and pile follow.
+- Not checked in a browser: stars may now overlap their neighbours a bit.
+
+## 2026-11-14 — Pink Tree leaves are *
+- Pink Tree's leaves, its falling leaves and its ground pile are now `*` instead of `/` (tried `@` first).
+
+## 2026-11-14 — Golden Tree trunk uses |
+- Golden Tree's trunk is now all `|` (no `#`), like the Terracotta Tree.
+
+## 2026-11-14 — Fruit removed, tree renamed Golden Tree
+- Owner didn't like the fruit. Removed it from the tree; the piece is now `js/pieces/golden-tree.js` (**Golden Tree**): cloud-shaped yellow crown, dark purple trunk.
+- The engine's `fruit` setting is still there but unused.
+- Carousel order: Spring, Maple, Pine, Terracotta, Pink Tree, Golden Tree.
+
+## 2026-11-14 — Fruit redrawn: round, made of *, on blue stems
+- Each fruit is now a small symbol picture (`FRUIT_SHAPE` in `js/tree.js`): a 2-symbol blue `|` stem with a round ball of red `*` hanging from it (3, 5, 3 symbols across). 5 fruits on the Fruit Tree.
+- A tree can pass its own `shape`, `symbol`, `stem` colour and `count`.
+- Not checked in a browser. If fewer than 5 show, the crown is too small for them at this size.
+
+## 2026-11-14 — Fruit Tree reshaped, bigger fruit
+- Fruit Tree's crown is now the cloud shape of tree 3 (top-right) on the illustrated sheet, instead of the square. Colours unchanged: three yellows, dark purple trunk. The square picture was deleted.
+- The trunk is tree 3's own trunk (thin, with one side branch), recoloured purple: the old picture's trunk could not be kept with a different picture's crown. Say if the forked trunk should come back.
+- Fruit is now big and round: clusters of `@` 3 wide and 2 tall, 6 of them, kept apart and inside the crown. Rule in `CLAUDE.md` updated.
+- Not checked in a browser: check for purple specks at the crown's edge and that 6 fruits fit.
+
+## 2026-11-14 — Fruit Tree, and fruit in the engine
+- New piece **Fruit Tree** from the owner's picture (`assets/square-tree.js`): square yellow crown in three yellows, thin dark purple trunk, about 14 red `@` fruits.
+- Engine: new `fruit` setting swaps a few leaf spots inside the crown for a fruit symbol. Fruits keep apart, stay off the crown's edge, sway with the tree and are never shaken off.
+- Carousel order: Spring, Maple, Pine, Terracotta, Pink Tree, Fruit Tree.
+- Not checked in a browser. Tune fruit with `count`, `symbol` (`@` or `*`) and `colours` in `js/pieces/fruit-tree.js`.
+
+## 2026-11-14 — Pink Tree (from the green sheet)
+- Added the owner's sheet of green trees and bushes as `assets/green-sheet.js`. New piece **Pink Tree** is tree 1 (top-left): tall and slim with separate leaf clumps, recoloured to three pinks; brown trunk.
+- Carousel order: Spring, Maple, Pine, Terracotta, Pink Tree.
+- Not checked in a browser. It is a narrow tree, so it has less detail than the others; the neighbouring big tree is very close on the sheet, so check for stray bits on the right.
+- Open question: the sheet carries an Adobe Stock watermark; check the licence before the site goes public.
+
+## 2026-11-14 — Maple moved in the carousel
+- Order is now Spring, Maple, Pine, Terracotta (Maple sits between the Spring Tree and the Pine).
+
+## 2026-11-14 — Maple a little thinner
+- New `narrow` setting squeezes a tree's width. Maple is set to 0.85 (15% thinner). This thins the trunk slightly too.
+
+## 2026-11-14 — Maple (from the crayon sheet)
+- Added the owner's sheet of nine crayon trees as `assets/crayon-sheet.js`. New piece **Maple** is tree 1 (top-left): spiky crown in yellow, orange and red, thin maroon trunk, dark veins drawn as `|` branches.
+- Three leaf colours follow the picture: yellow in the middle, orange, red at the edges.
+- Carousel order: Spring, Pine, Terracotta, Maple.
+- Not checked in a browser. Likely to need tuning: crop edges (grass under the tree), the veins, trunk height (`trunkTop`).
+- Open question: is this sheet licensed for the public site? (It has a stock-site watermark in the corner.)
+
+## 2026-11-14 — Rainbow Bonsai removed
+- Owner didn't like it. Piece and its picture deleted; carousel is back to Spring, Pine, Terracotta. The `onePiece` engine setting stays.
+
+## 2026-11-14 — Rainbow Bonsai
+- New piece from the owner's bonsai picture (`assets/bonsai.js`): thick brown trunk, six leaf pads (red, pink, teal, purple, green, yellow). Each leaf snaps to its pad's colour, brightened, in three speckled tones.
+- Dark shapes where branches cross the pads are drawn as branches (`|`); the lower trunk is `#`. No root flare (base is already wide).
+- Carousel order: Spring, Pine, Terracotta, Rainbow Bonsai.
+- Not checked in a browser. Likely to need tuning: trunk/leaf split at pad edges, the muted purple pad, where `|` turns into `#` (`trunkTop`), overall size (`fit`).
+- Open question: is this picture licensed for the public site?
+
+## 2026-11-14 — Orange slashes under the Terracotta trunk removed
+- Cause: the soft grey edge pixels around the navy trunk were being read as leaves and coloured orange. Terracotta's trunk test is now "anything not clearly orange" (`isWood`).
+- Engine safety net for all trees: leaf symbols level with or below the trunk's lowest row are dropped.
+- Not checked in a browser.
+
+## 2026-11-14 — Three leaf colours per tree
+- Every tree now uses three leaf colours (light, middle, dark) instead of two. Spring: three greens plus pink blossom. Pine: three greens. Terracotta: light salmon, coral, deeper terracotta.
+- `tones` takes any number of colours; `twoLeaf` became `stepLeaf`. Rule in `CLAUDE.md` updated.
+- Not checked in a browser. On Terracotta the middle colour may be scarce, since its picture is mostly two flat colours.
+
+## 2026-11-14 — Spring and Terracotta use two leaf colours too
+- New `tones` setting: picture trees are limited to a light and a dark leaf colour, placed by the picture's own light and dark areas (split at the middle of the picture's range, with a little speckle at the border).
+- Spring: two greens plus the untouched pink blossom. Terracotta: light salmon and deeper terracotta.
+- Rule added to `CLAUDE.md`. Not checked in a browser: the split point or the two colours may need tuning per tree.
+
+## 2026-11-14 — Pine uses exactly two greens
+- Pine's leaves were a smooth range of greens (a 4-colour ramp). Now each needle is one of two greens, light or dark, in the same layout (`twoLeaf` in `js/tree.js`). Falling needles use the same two.
+- Spring and Terracotta still take a range of shades from their pictures.
+
+## 2026-11-14 — More leaf contrast, same layout
+- On top of the restored leaf colours, the engine now pushes each leaf's lightness away from the tree's average (`contrast`, default 1.6): light leaves lighter, dark leaves darker. The layout of light and dark leaves is unchanged.
+- Spring Tree's pink blossom is left out of it.
+- Not checked in a browser. Tune per tree with `contrast` (1 = off, 2 = strong).
+
+## 2026-11-14 — Leaf shading experiments undone
+- Went back to the leaf colours from before the three shading experiments below (depth shading, two colours per tree, contrast changes). Leaves are coloured from the picture / colour ramp again, as they were right after the Terracotta trunk change.
+- The two-colour rule was removed from `CLAUDE.md`. The three entries below are kept as history only.
+
+## 2026-11-14 — Softer contrast, leaf layout follows the artwork again
+- The two leaf colours on each tree were brought closer together (between the first two-colour version and the high-contrast one).
+- Where light and dark leaves go now follows the picture's own shading (as before the two-colour change), plus a little clumping and speckle, instead of big blotches. About half the leaves get each colour.
+- Assumption: "the layout before" meant the picture-based, speckled look. Not checked in a browser.
+
+## 2026-11-14 — Two leaf colours per tree
+- Each tree's leaves now use exactly two colours (`tones`: light and dark), placed in clumps and lit from the top-left. This replaces the multi-step shading below.
+- Spring: two greens plus the pink blossom. Pine: two greens. Terracotta: light salmon and deeper terracotta.
+- The two colours on each tree were then pushed further apart (lighter light, deeper dark) so the difference is easy to see.
+- Rule in `CLAUDE.md` updated. Not checked in a browser.
+
+## 2026-11-14 — Stronger leaf shading for depth
+- Engine now shades every tree's leaves in clear tone steps: lit from the top-left, darker low and to the right, grouped in soft clumps. Lighter tones are tinted toward white, darker ones up to about 40% darker.
+- Strength per tree with the `depth` setting (default 1, 0 = flat). `leafColour` now returns `[r,g,b]`.
+- Rule added to `CLAUDE.md`. Not checked in a browser: say if it is too strong, too blotchy or still too subtle.
+
+## 2026-11-14 — Terracotta trunk uses |
+- Terracotta Tree's trunk is now all `|` (no `#`). Rule in `CLAUDE.md` updated: trunks are `#` by default but can be `|` per tree.
+
+## 2026-11-14 — Brighter colours, stray slashes removed
+- New rule in `CLAUDE.md`: always use bright, vivid colours. Added `bright()` in `js/engine.js`.
+- Terracotta Tree: crown colours brightened, trunk is a brighter navy. Pine: brighter greens and trunk.
+- Trees cut from a sheet now keep only their biggest connected shape, which removes stray symbols caught by the crop (the 7-8 extra slashes on the Terracotta Tree). I couldn't see where they were, so check they are gone.
+
+## 2026-11-14 — Terracotta Tree (from the illustrated sheet)
+- Added the owner's sheet of six trees as `assets/tree-sheet.js`. New piece **Terracotta Tree** is tree 6 (boxy salmon crowns, dark navy trunk), cropped from the sheet and converted with the normal engine.
+- Engine got four new settings: `crop`, `fit`, `paper` (which pixels are background) and `isWood` (which pixels are trunk), so trunks no longer have to be brown.
+- Carousel order: Spring, Pine, Terracotta.
+- Open questions: is the sheet licensed for the public site? Should sheet trees replace Spring/Pine?
+- Not checked in a browser: crop edges, trunk/branch split (`trunkTop`) and colours may need tuning.
+
+## 2026-11-14 — Smoother, slower slide
+- Slide is slower and softer: `STIFFNESS` 110 -> 60, `DAMPING` 13 -> 10 (about 0.8s per move, still a small overshoot).
+- Smoother: the spring now steps in small fixed slices and uses real elapsed time, so a slow frame no longer makes the movement jump; positions are no longer rounded to whole pixels.
+- Less lag: the glow blur now runs on half-size copies (about a quarter of the cost per tree). Looks the same, but compare the glow by eye.
+- Not checked in a browser.
+
+## 2026-11-14 — Endless loop sized to the window
+- The loop now grows to fit the window (`ensureSlots` in `js/main.js`): the jump from one end to the other always happens off-screen, so no tree pops in or out on screen, even on very wide screens. `MIN_SLOTS` is the minimum.
+- Every tree that is on screen (or half a tree away) keeps animating, so none look frozen at the edges. The old `ANIMATE_RADIUS` is gone.
+- Many trees animating at once is heavier; if it feels slow on a wide screen, say so.
+- Not checked in a browser.
+
+## 2026-11-14 — Trees closer again
+- `GAP` in `js/main.js` changed from -80 to -150. Not checked in a browser; if the trees' leaves overlap, raise it a little (e.g. -120).
+
+## 2026-11-14 — Trees share one ground line
+- The engine now slides each tree up or down (whole rows) so its lowest trunk cell sits on the same row for every tree. The ground pile uses the same line.
+- Set by `GROUND_MARGIN` in `js/tree.js` (empty rows under the trunk bottom).
+- Not checked in a browser. If the Spring Tree's top gets clipped, say so.
+
+## 2026-11-14 — Pine: green needles only, clearer trunk
+- Pine's falling needles are now only greens (the brown ones are gone).
+- Trunk is taller (0.15 of the picture height, `trunkH`), wider (0.07) and a richer brown, so it shows clearly under the lowest tier.
+- Not checked in a browser.
+
+## 2026-11-14 — Down to two trees
+- Kept **Spring Tree** (pink and green) and **Pine** (the Christmas tree). Deleted Cherry Blossom, Weeping Willow, Golden Ginkgo and Autumn Oak, and the unused painters.
+- The carousel repeats the pieces until there are at least 6 slots (`MIN_SLOTS` in `js/main.js`), so the loop never looks empty: Spring, Pine, Spring, Pine, Spring, Pine.
+- Assumption: "christmas" meant the Pine and "pink-green summer tree" meant the Spring Tree.
+
+## 2026-11-14 — Leaves are slashes everywhere
+- Cherry, Willow and Pine now use `/` for leaves and falling bits too (were `@`, `:` and `^`). Rule in `CLAUDE.md` updated: `/` for leaves on almost every tree.
+
+## 2026-11-14 — Spring physics and closer trees
+- Slide is now a spring (speeds up, overshoots slightly, settles) instead of a timed tween. Tune with `STIFFNESS` and `DAMPING` in `js/main.js`.
+- While the row moves, every tree is pushed to lean and shake in the direction of movement (`SWAY_PUSH`); it springs back and settles by itself, and can shake a few leaves loose.
+- Trees sit closer: `GAP` is now -80 (was 48). Trees' empty edges overlap, so a neighbour can catch a drag near the edge.
+- `makeTree` instances got a `drive(wind)` method for outside wind.
+- Not checked in a browser: bounce, lean and spacing may need tuning by eye.
+
+## 2026-11-14 — Carousel, winter tree removed
+- Trees are lined up side by side as a cyclic carousel: Back/Next slide the row so the chosen tree is in the middle, and the last tree is followed by the first in the same direction (no rewinding).
+- Only the middle tree and its neighbours animate (`ANIMATE_RADIUS` in `js/main.js`). Gap is `GAP`.
+- Winter Tree deleted: no snow themes. Owner also disliked the painted trees' look; the tree artwork is being reconsidered.
+
+## 2026-11-14 — Six new trees
+- Split the Spring Tree code into a shared engine (`js/tree.js`) so each tree is a small settings file in `js/pieces/`.
+- New `js/painters.js` draws tree shapes in code (no extra pictures needed).
+- New trees, in carousel order after Spring Tree: **Cherry Blossom** (pink, `@` flowers), **Weeping Willow** (yellow-green strands), **Golden Ginkgo** (yellow), **Autumn Oak** (orange/red), **Pine** (dark green `^`, slow needles), **Winter Tree** (bare, snow `*` falling from the sky).
+- Back/Next now cycle through all seven.
+- Not checked in a browser: tree shapes, sizes and colours may need tuning by eye. Each tree's numbers are at the top of its own file.
+
+## 2026-11-14 — Thicker trunk base
+- Spring Tree: the lowest 4 rows of the trunk now flare out with extra `#` cells (3, 2, 1, 1 cells each side, bottom first). Set by `FLARE` at the top of `js/pieces/spring-tree.js`. Not checked in a browser.
+
+## 2026-11-14 — Glow tried off, then restored
+- Glow was switched off briefly, then put back at 0.26. To switch it off again, set `GLOW = 0` at the top of `js/pieces/spring-tree.js`.
+
+## 2026-11-14 — Wind moves symbols by swapping, not sliding
+- Spring Tree: every symbol now sits exactly on the character grid. Wind, sway and shake work by each grid spot showing the symbol a few cells upwind, so neighbours appear and disappear and the tree seems to move.
+- Added the old small smooth sway back on top (sub-cell drift, bend, leaf tremble) so motion and shakes stay clearly visible. Rule in `CLAUDE.md` updated to match.
+- Strength is set by `SWAY_CELLS` (idle sway) and `BEND_CELLS` (drag/shake) at the top of `js/pieces/spring-tree.js`, measured in grid cells.
+- Rule added to `CLAUDE.md`. Not checked in a browser: sway strength may need tuning by eye.
+
+## 2026-11-14 — Smaller tree
+- Trees are now capped at 600px (was 760px, briefly 420px) so there is room for a carousel of trees. Set by `MAX_ART_SIZE` at the top of `js/main.js`.
+
+## 2026-11-14 — Moved to Vite
+- Added Vite (only dependency): `npm run dev` for live reload, `npm run build` for the final site in `dist/`.
+- Scripts converted to ES modules (`import`/`export`); the page no longer opens by double-clicking `index.html`, use `npm run dev`.
+- `vercel.json` simplified: Vercel now detects Vite and builds it. Added `package.json`, `package-lock.json`; `.gitignore` now ignores `dist`.
+- Checked: `npm run build` succeeds. Not checked in a browser.
+
+## 2026-11-14 — Page shell built from Figma (node 4427:3)
+- Page now matches the Figma design: grey `#f2f2f4` background, top bar (`// About`, `/ ASCIILAND /`, `Story //`), and bottom bar (visitor pill, Back and Next pills).
+- Font is Aileron (600 and 700), self-hosted in `assets/fonts/`. Icons are in `assets/icons/` (Back reuses the same chevron, mirrored).
+- The empty middle is the stage: it shows one ASCII piece at a time; Back/Next cycle through pieces (wraps around). Spring Tree is the only piece so far.
+- "82,372 Cuties Visited" is a fixed placeholder number, not a real counter yet.
+- About and Story links go nowhere yet.
+- Not yet checked in a browser against the Figma screenshot (preview server was blocked). Check spacing by eye.
+- Frame size in Figma is about 1925px wide; bottom-bar gaps (36px between pill and nav, 6px between Back/Next) were estimated from the screenshot.
+
+## 2026-11-14 — Vercel hosting
+- Added `vercel.json` (static site, no build step, two safe headers) and `.gitignore`.
+- Added a Hosting section to `CLAUDE.md` and deploy steps to `README.md`.
+- Not yet connected to Vercel: the repo still needs to be imported there (see README).
+
+## 2026-11-14 — Project set up
+- Repo scaffolded as plain HTML/CSS/JS (later moved to Vite, see above).
+- Added `CLAUDE.md` (rules) and this log.
+- Page is a responsive grid of cards; each card is one canvas piece, with a single shared animation loop that pauses off-screen pieces.
+- Piece 1: **Spring Tree** ported from the earlier standalone page (spring look, blossom leaves, hold-and-drag wind, press to shake, falling leaves, small ground pile).
+- Note: could not read feralui.dev/pixel-play (page renders client-side), so the grid layout is our own simple version.

@@ -1,0 +1,118 @@
+/* Aileron, self-hosted so the page works offline. */
+@font-face {
+  font-family: "Aileron";
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url("../assets/fonts/aileron-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Aileron";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("../assets/fonts/aileron-700.woff2") format("woff2");
+}
+
+:root {
+  color-scheme: light;
+  --bg: #f2f2f4;
+  --ink: #000000;
+  --muted: #5c5c62;
+  --pill-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Aileron", "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 18px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* ---------- top bar ---------- */
+.top {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 31px 29px 0;       /* the pills' own padding puts the text where the design has it (39px / 41px) */
+  white-space: nowrap;
+}
+.link { color: var(--muted); font-weight: 700; text-decoration: none; padding: 8px 12px; line-height: 18px; }
+.link:active { transform: scale(0.97); }
+.link:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.link.left { justify-self: start; }
+.link.right { justify-self: end; text-align: right; }
+.brand { margin: 0; font-size: 14px; line-height: 18px; font-weight: 700; color: var(--ink); text-align: center; }
+
+/* ---------- the empty space for the ASCII art ---------- */
+.stage {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+/* Each tree is placed by JS (js/main.js): centred, then slid left or right in an endless loop. */
+.stage canvas { position: absolute; left: 0; top: 50%; display: block; touch-action: none; cursor: grab; -webkit-tap-highlight-color: transparent; will-change: transform; }
+.stage canvas:active { cursor: grabbing; }
+
+/* ---------- bottom bar ---------- */
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 36px;
+  padding: 0 16px 48px;
+}
+.nav { display: flex; align-items: center; gap: 6px; }
+
+.pill {
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: var(--pill-shadow);
+  border: 0;
+}
+
+.counter {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 15px 0 11px;
+  white-space: nowrap;
+}
+/* a little ASCII face, in the same pink as the old pixel icon but brighter */
+.counter-icon { flex: none; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-weight: 700; font-size: 12px; letter-spacing: -0.2px; color: #f0679a; -webkit-text-stroke: 0.6px currentColor;   /* extra-thick strokes: the font's own bold was too light */ }
+.count { font-weight: 700; color: var(--ink); margin-right: -3px; }   /* 4px gap to the label */
+.label { font-weight: 600; color: var(--muted); }
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 12px;
+  font: inherit;
+  font-weight: 600;
+  line-height: normal;
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: scale(0.97); }
+.btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.chev { display: block; flex: none; }
+.chev.flip { transform: scaleX(-1); }
+
+/* ---------- small screens ---------- */
+@media (max-width: 640px) {
+  .top { padding: 24px 16px 0; }
+  .bar { flex-direction: column; gap: 12px; padding-bottom: 32px; }
+}

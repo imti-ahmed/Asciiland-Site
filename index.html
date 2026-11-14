@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asciiland</title>
+<meta name="description" content="A small playground of living ASCII trees.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top">
+    <a class="link pill left" href="#about">/ About</a>
+    <h1 class="brand">/ ASCIILAND /</h1>
+    <a class="link pill right" href="#story">Story /</a>
+  </header>
+
+  <!-- The empty space: each ASCII piece is drawn here, one at a time. -->
+  <main class="stage" id="stage"></main>
+
+  <footer class="bar">
+    <div class="pill counter">
+      <span class="counter-icon" aria-hidden="true">(^_^)</span>
+      <span class="count" id="count">&mdash;</span>
+      <span class="label">Cuties Visited</span>
+    </div>
+    <div class="nav">
+      <button class="pill btn" id="back" type="button">
+        <img class="chev flip" src="assets/icons/chevron.svg" alt="" width="16" height="16">
+        <span>Back</span>
+      </button>
+      <button class="pill btn" id="next" type="button">
+        <span>Next</span>
+        <img class="chev" src="assets/icons/chevron.svg" alt="" width="16" height="16">
+      </button>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>
