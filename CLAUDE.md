@@ -60,5 +60,5 @@ A small website of living ASCII-art trees you can interact with. Pure digital-ar
 - The owner is not technical: explain changes in plain language, keep answers short.
 - Ask before adding any dependency or tooling beyond Vite. The default answer is no.
 - Update `BUILDLOG.md` with every meaningful change.
-- Commit only when asked.
+- Commit only when asked. Work directly on the `main` branch (owner's choice); no feature branches unless asked. Remember that pushing `main` deploys the live site.
 - Never open Claude in Chrome, a browser, a preview, or a local server (that includes `npm run dev` and `npm run preview`) yourself. The owner checks the page by hand. Don't use the browser tools at all, even to verify your own work.
