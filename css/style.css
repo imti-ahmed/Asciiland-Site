@@ -67,6 +67,7 @@ body {
   background: #fff; border-radius: 16px; box-shadow: var(--pill-shadow);
   padding: 14px 16px; white-space: normal; font-weight: 600; color: var(--muted);
   transform-origin: top left; transform: scale(0); opacity: 0;
+  will-change: transform, opacity;                  /* own graphics layer: the grow runs on the graphics card, not the busy page thread that draws the trees */
   transition: transform 0.22s cubic-bezier(0.4, 0, 0.6, 1), opacity 0.2s ease;      /* exit: smooth, no bounce */
 }
 .menu.right .card { transform-origin: top right; }
@@ -171,6 +172,7 @@ body.ready .top, body.ready .bar { opacity: 1; }
 .prompt-card {
   padding: 20px 16px 16px; text-align: center; background: #fff; border-radius: 16px; box-shadow: var(--pill-shadow);
   transform-origin: top center; transform: scale(0); opacity: 0;
+  will-change: transform, opacity;                  /* same reason as .card */
   transition: transform 0.22s cubic-bezier(0.4, 0, 0.6, 1), opacity 0.2s ease;      /* exit: quick, no bounce */
 }
 .prompt.show .prompt-card {

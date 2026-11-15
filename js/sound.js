@@ -11,7 +11,7 @@
 import soundUrl from "../assets/sounds/forest-ambience.mp3";
 import rustleUrl from "../assets/sounds/leaf-rustle.mp3";
 
-var VOLUME = 0.5;                                  // how loud the sound is (0 to 1): a gentle background
+var VOLUME = 2;                                    // how loud the sound is: 1 is full, above 1 is boosted (see setLevel)
 var FADE_MS = 1500;                                // fade-in time; fading out is quicker
 var btn = document.getElementById("sound");
 var audio = new Audio(soundUrl);
@@ -23,7 +23,7 @@ var on = true;                                     // the pill's state: sound st
 var playing = false;                               // is the audio actually running (the browser allowed it)?
 var fader = 0;
 
-var RUSTLE_VOLUME = 0.05;                          // how loud the rustle is (0 to 1); it plays over the background loop
+var RUSTLE_VOLUME = 0.4;                           // how loud the rustle is (0 to 1); it plays over the background loop
 var RUSTLE_GAP_MS = 120;                           // presses closer together than this do not start another rustle
 var RUSTLE_CUT_START_S = 0.5, RUSTLE_CUT_END_S = 1;  // seconds cut off the start and the end of the file
 var EDGE_FADE_S = 0.01, END_FADE_S = 0.25;         // a quick fade-in so the cut start does not click, and a fade-out at the cut end
@@ -58,6 +58,18 @@ try {
     .catch(function () { /* no rustle, the rest still works */ });
 } catch (err) { ctx = null; }
 
+// A plain audio element cannot go above full volume, so a louder-than-1 VOLUME goes through a gain stage (Web Audio).
+// `level` is the single loudness number: up to 1 it moves the element's volume, above 1 it adds gain on top.
+var level = 0, boost = null;
+try {
+  if (ctx) { boost = ctx.createGain(); ctx.createMediaElementSource(audio).connect(boost); boost.connect(ctx.destination); }
+} catch (err) { boost = null; }
+function setLevel(v) {
+  level = v;
+  audio.volume = Math.min(1, v);
+  if (boost) boost.gain.value = Math.max(1, v);
+}
+
 // One rustle, from the start, the moment it is asked for.
 function rustle() {
   var now = performance.now();
@@ -79,16 +91,17 @@ document.getElementById("stage").addEventListener("pointerdown", function (e) {
 // Move the volume smoothly to `target`, then call `done`.
 function fadeTo(target, ms, done) {
   clearInterval(fader);
-  var from = audio.volume, t0 = performance.now();
+  var from = level, t0 = performance.now();
   fader = setInterval(function () {
     var k = Math.min(1, (performance.now() - t0) / ms);
-    audio.volume = from + (target - from) * k;
+    setLevel(from + (target - from) * k);
     if (k === 1) { clearInterval(fader); if (done) done(); }
   }, 30);
 }
 
 function start() {
   if (!on) return;
+  if (ctx && ctx.state === "suspended") ctx.resume();   // the boosted path only makes sound once the context runs
   if (playing) { fadeTo(VOLUME, 600); return; }          // already running (maybe mid fade-out): just bring it back up
   var p = audio.play();
   if (p && p.then) p.then(running, function () { /* not allowed yet: wait for a click */ });

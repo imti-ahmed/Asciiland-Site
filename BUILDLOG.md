@@ -16,6 +16,12 @@ Newest entry on top. Each entry: date, what changed, anything to remember.
 - "Hell Yeah" is a real click, so the browser lets the sound start. "Umm No" switches the Sound pill to "Sound Off". The popup does not appear if the browser already started the sound by itself.
 - It shows on every page load (the choice is not remembered). Wording is the owner's to change. Checked: `npm run build`. Not checked in a browser.
 
+## 2026-11-15 — Background volume 0.8
+- `VOLUME` in `js/sound.js` raised from 0.5 to 0.8, then to 1 (full) at the owner's request. `RUSTLE_VOLUME` (leaf rustle) raised from 0.05 to 0.8, then 0.6, then 0.4. Ambience then set to 2 (double): a plain audio element stops at 1, so the loop now also goes through a Web Audio gain stage (`setLevel` in `js/sound.js`). Above 1 loud recordings can distort; lower `VOLUME` if it crackles.
+
+## 2026-11-15 — Popup lag fix (attempt)
+- The About, Story and sound cards felt laggy. The spring curve itself is cheap; the likely cause is that the page is busy drawing the trees every frame, so the card's grow got only some of the frames. The cards (`.card`, `.prompt-card`) now have `will-change: transform, opacity`, so the browser animates them on the graphics card, separate from the tree drawing. Not measured in a browser: the owner to confirm if it feels better.
+
 ## 2026-11-15 — Sound popup snappier again
 - The soft no-bounce ease was too smooth. It now opens in 0.38s with a small bounce (between the soft ease and the About/Story spring), the text follows sooner, and it closes in 0.22s. The delay after the last tree is now 0 (`SHOW_AFTER_MS`). Checked: `npm run build`.
 
