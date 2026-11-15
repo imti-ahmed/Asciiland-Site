@@ -3,7 +3,7 @@
 A small website of living ASCII-art trees you can interact with. Pure digital-art experimentation. Inspired by feralui.dev/pixel-play: a grid of small interactive pieces.
 
 ## Stack (keep it this simple)
-- Plain HTML, CSS and JavaScript (ES modules), bundled and served by **Vite**. Vite is the only dependency. No framework, no other libraries. The only network call is the visitor counter (`js/counter.js`), which uses the free outside service abacus.jasoncameron.dev; add no others without asking.
+- Plain HTML, CSS and JavaScript (ES modules), bundled and served by **Vite**. Vite is the only dependency. No framework, no other libraries. The only network call is the visitor counter (`js/counter.js`), which uses the owner's own counter service at imticounter.vercel.app; add no others without asking.
 - Run it: `npm install` once, then `npm run dev` (live reload). Build check: `npm run build` (output goes to `dist/`, never edit it).
 - Use `import` / `export` between files. Images are embedded as base64 in a `.js` file under `assets/` (exporting a string) so the tree image loads without extra files.
 - Ask before adding any other dependency or tool. The default answer is no.

@@ -9,6 +9,11 @@ Newest entry on top. Each entry: date, what changed, anything to remember.
 - Decide on page title/intro wording and overall look of the grid.
 - Per-piece tuning controls if wanted (shake strength, leaf count, pile size, wind sensitivity).
 
+## 2026-11-15 — Own visitor counter
+- The visitor pill now uses the owner's own counter service (imticounter.vercel.app) instead of abacus.jasoncameron.dev. Site name `asciiland`, counter `home`, so the count starts again from 0. Same behaviour as before: +1 per load on the live site, read-only on localhost, dash if the service is unreachable.
+- The counter now waits up to 6 seconds per try and retries once if the first try fails. The retry only reads the number (never adds), so a slow reply can't count a visit twice; worst case one visit is missed.
+- Used the service's plain web-address option (`/hit/` and `/get/`) rather than its script tag, so the existing `js/counter.js` and the pill stay as they are.
+
 ## 2026-11-15 — Sound welcome popup
 - A small white card appears at the centre top, just below the ASCIILAND title, once the trees have finished fading in (`js/main.js` sends an `intro-done` event; the popup waits 0.2 seconds after it, `SHOW_AFTER_MS`; first it showed at 2.6 s, then 0.3 s after load), with no overlay (the owner tried a grey blurred overlay with the card in the page centre first, then dropped it for now): "Best enjoyed with sound. A soft forest hums behind the trees." and, on the next line, "Shall we switch it on?" Buttons: "Hell Yeah" and "Umm No" (`js/soundprompt.js`, markup in `index.html`, `.prompt` in `css/style.css`). Escape counts as "Umm No". (First version sat above the bottom bar with "Sound on" / "Maybe later".)
 - The card is as wide as its longest line (`width: max-content` on `.prompt`), not a fixed width, so there is no empty space at the sides.
