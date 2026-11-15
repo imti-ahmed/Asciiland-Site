@@ -152,9 +152,41 @@ body.ready .top, body.ready .bar { opacity: 1; }
   -webkit-tap-highlight-color: transparent;
 }
 .btn:active { transform: scale(0.97); }
+/* the Sound pill when the sound is off: only the text turns grey, the pill stays white */
+#sound[aria-pressed="false"] { color: #8d8d94; transition: color 0.15s ease; }
 .btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .chev { display: block; flex: none; }
 .chev.flip { transform: scaleX(-1); }
+
+/* ---------- sound popup ---------- */
+/* A white card (same look and the same grow/shrink idea as the About/Story cards, but a softer ease with no bounce) centred at the top, just
+   below the ASCIILAND title. It grows from its top centre instead of a corner. No overlay: the trees stay fully
+   visible and usable. Hidden (and unclickable) until .show. */
+.prompt {
+  position: fixed; top: 82px; left: 50%; z-index: 10; transform: translateX(-50%);
+  width: max-content; max-width: calc(100vw - 32px);   /* as wide as its longest line, no empty space at the sides */
+  pointer-events: none;
+}
+.prompt.show { pointer-events: auto; }
+.prompt-card {
+  padding: 20px 16px 16px; text-align: center; background: #fff; border-radius: 16px; box-shadow: var(--pill-shadow);
+  transform-origin: top center; transform: scale(0); opacity: 0;
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.6, 1), opacity 0.2s ease;      /* exit: quick, no bounce */
+}
+.prompt.show .prompt-card {
+  transform: scale(1); opacity: 1;
+  /* quick with a small bounce: livelier than the soft ease-out, calmer than the About/Story spring */
+  transition: transform 0.38s cubic-bezier(0.3, 1.25, 0.55, 1), opacity 0.15s ease;
+}
+.prompt h3, .prompt p, .prompt-actions { opacity: 0; transition: none; }     /* text vanishes at once on exit, and shows after the card has grown */
+.prompt.show h3, .prompt.show p, .prompt.show .prompt-actions { opacity: 1; transition: opacity 0.12s ease 0.08s; }
+.prompt h3 { margin: 0; font-size: inherit; font-weight: 700; color: var(--ink); }
+.prompt p { margin: 4px 0 0; color: var(--muted); font-weight: 600; }
+.prompt-actions { display: flex; justify-content: center; gap: 6px; margin-top: 16px; }
+.prompt .btn { background: var(--bg); box-shadow: none; }
+.prompt .btn:not(.quiet) { background: var(--ink); color: #fff; }
+.prompt .btn.quiet { color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .prompt-card, .prompt.show .prompt-card { transition: opacity 0.12s ease; transform: none; } }
 
 /* ---------- small screens ---------- */
 @media (max-width: 640px) {

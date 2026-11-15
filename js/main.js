@@ -7,6 +7,7 @@ import "./counter.js";
 import "./brand.js";
 import "./menus.js";
 import "./sound.js";
+import "./soundprompt.js";
 
 // Pieces show in this order. Add new ones here.
 import "./pieces/spring-tree.js";
@@ -184,11 +185,13 @@ function loop(now) {
 // Page load, in this order: (1) the top and bottom bars fade in, (2) the middle tree, (3) the trees on both
 // sides in pairs: the nearest left and right trees together, then the next pair, and so on.
 var MIDDLE_AT = 280, SIDES_AT = 700, PAIR_GAP = 220;       // when each step starts, in milliseconds
+// Marks the intro as over and tells the rest of the page (the sound popup waits for this).
+function finish() { introDone = true; window.dispatchEvent(new Event("intro-done")); }
 function intro() {
   var calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   function showAll() { slots.forEach(function (s) { s.canvas.classList.add("show"); }); }
   document.body.classList.add("ready");
-  if (calm) { showAll(); introDone = true; return; }
+  if (calm) { showAll(); finish(); return; }
   setTimeout(function () { slots[0].canvas.classList.add("show"); }, MIDDLE_AT);   // the middle tree comes after the bars
   var steps = {};                                            // trees grouped by how far they are from the middle
   for (var i = 1; i < n; i++) if (onScreen(i)) (steps[Math.round(Math.abs(offset(i)))] = steps[Math.round(Math.abs(offset(i)))] || []).push(i);
@@ -196,7 +199,7 @@ function intro() {
   dists.forEach(function (d, k) {                            // the left and right tree at each distance appear together
     setTimeout(function () { steps[d].forEach(function (i) { slots[i].canvas.classList.add("show"); }); }, SIDES_AT + k * PAIR_GAP);
   });
-  setTimeout(function () { showAll(); introDone = true; }, SIDES_AT + dists.length * PAIR_GAP + 200);   // anything off-screen
+  setTimeout(function () { showAll(); finish(); }, SIDES_AT + dists.length * PAIR_GAP + 200);   // anything off-screen
 }
 
 layout();

@@ -58,6 +58,18 @@
     </button>
   </footer>
 
+  <!-- Welcome popup (js/soundprompt.js): hidden until a moment after load. -->
+  <div class="prompt" id="sound-prompt" role="dialog" aria-label="Sound" aria-hidden="true">
+    <div class="prompt-card">
+      <h3>Best enjoyed with sound</h3>
+      <p>A soft forest hums behind the trees.<br>Shall we switch it on?</p>
+      <div class="prompt-actions">
+        <button class="pill btn" id="sound-yes" type="button"><span>Hell Yeah</span></button>
+        <button class="pill btn quiet" id="sound-no" type="button"><span>Umm No</span></button>
+      </div>
+    </div>
+  </div>
+
   <script type="module" src="/js/main.js"></script>
 </body>
 </html>

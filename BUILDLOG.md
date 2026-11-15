@@ -9,6 +9,22 @@ Newest entry on top. Each entry: date, what changed, anything to remember.
 - Decide on page title/intro wording and overall look of the grid.
 - Per-piece tuning controls if wanted (shake strength, leaf count, pile size, wind sensitivity).
 
+## 2026-11-15 — Sound welcome popup
+- A small white card appears at the centre top, just below the ASCIILAND title, once the trees have finished fading in (`js/main.js` sends an `intro-done` event; the popup waits 0.2 seconds after it, `SHOW_AFTER_MS`; first it showed at 2.6 s, then 0.3 s after load), with no overlay (the owner tried a grey blurred overlay with the card in the page centre first, then dropped it for now): "Best enjoyed with sound. A soft forest hums behind the trees." and, on the next line, "Shall we switch it on?" Buttons: "Hell Yeah" and "Umm No" (`js/soundprompt.js`, markup in `index.html`, `.prompt` in `css/style.css`). Escape counts as "Umm No". (First version sat above the bottom bar with "Sound on" / "Maybe later".)
+- The card is as wide as its longest line (`width: max-content` on `.prompt`), not a fixed width, so there is no empty space at the sides.
+- The card opens with the same spring grow animation as the About/Story cards (text shows after it has grown, and it shrinks away when closed), but from its top centre instead of a corner (`.prompt-card` in `css/style.css`).
+- "Hell Yeah" is a real click, so the browser lets the sound start. "Umm No" switches the Sound pill to "Sound Off". The popup does not appear if the browser already started the sound by itself.
+- It shows on every page load (the choice is not remembered). Wording is the owner's to change. Checked: `npm run build`. Not checked in a browser.
+
+## 2026-11-15 — Sound popup snappier again
+- The soft no-bounce ease was too smooth. It now opens in 0.38s with a small bounce (between the soft ease and the About/Story spring), the text follows sooner, and it closes in 0.22s. The delay after the last tree is now 0 (`SHOW_AFTER_MS`). Checked: `npm run build`.
+
+## 2026-11-15 — Sound popup smoother and quicker
+- The popup now opens with a soft ease-out and no bounce (0.55s, text fades in a little after), instead of the About/Story spring, and closes slightly slower and smoother. It appears 0.04 seconds after the last tree (was 0.2). `SHOW_AFTER_MS` in `js/soundprompt.js`, `.prompt-card` in `css/style.css`. Checked: `npm run build`.
+
+## 2026-11-15 — Sound pill greyed when off
+- When the sound is off the Sound pill's text turns grey (the pill itself stays white; a light grey fill was tried first and dropped); "Sound On" stays white with black text (`#sound[aria-pressed="false"]` in `css/style.css`). This also applies after "Umm No" in the popup. Checked: `npm run build`.
+
 ## 2026-11-15 — Leaf rustle on press
 - Added the owner's leaf rustle sound (5 seconds, 120 KB) as `assets/sounds/leaf-rustle.mp3`. It plays whenever any tree is pressed (mouse or touch), over the background forest sound, which keeps looping underneath.
 - It follows the Sound pill (silent on "Sound Off"). Presses closer together than 0.12 seconds do not start another one; otherwise rustles can overlap. Volume is `RUSTLE_VOLUME` in `js/sound.js` (first 0.8, then lowered to 0.4, 0.1 and finally 0.05 at the owner's request).

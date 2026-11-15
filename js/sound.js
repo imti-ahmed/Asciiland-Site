@@ -107,17 +107,21 @@ function stop() {
 
 // The first click, tap or key press lets the browser play sound. (Pressing the Sound pill itself is handled by the pill.)
 function firstTouch(e) {
-  if (e.target && e.target.closest && e.target.closest("#sound")) return;
+  if (e.target && e.target.closest && e.target.closest("#sound, #sound-prompt")) return;   // the popup's buttons decide for themselves
   start();
 }
 ["pointerdown", "keydown"].forEach(function (n) { window.addEventListener(n, firstTouch); });
 
-btn.addEventListener("click", function () {
-  on = !on;
+// One place that switches the sound, used by the pill and by the welcome popup (js/soundprompt.js).
+export function setSound(value) {
+  on = value;
   btn.querySelector("span").textContent = on ? "Sound On" : "Sound Off";
   btn.setAttribute("aria-pressed", on ? "true" : "false");
   if (on) start(); else stop();
-});
+}
+export function soundPlaying() { return playing; }
+
+btn.addEventListener("click", function () { setSound(!on); });
 
 document.addEventListener("visibilitychange", function () {   // no wind in a tab nobody is looking at
   if (document.hidden) { if (playing) { clearInterval(fader); audio.pause(); playing = false; } }
