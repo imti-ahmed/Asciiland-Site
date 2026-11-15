@@ -10,7 +10,8 @@
 //   fit             how tall the cropped tree is drawn, as a share of the square (default 0.8)
 //   narrow          squeeze the tree's width (1 = as drawn, 0.85 = 15% thinner)
 //   onePiece        keep only the biggest connected shape (default: on when `crop` is used)
-//   paper(r,g,b)    returns true for background pixels (default: near-white)
+//   paper(r,g,b,u,v)  returns true for background pixels (default: near-white). u, v = where the spot is in the square
+//                   (0..1 across, 0..1 down), so a part of the picture can also be cut out by height
 //   isWood(r,g,b,u,v)   returns true for trunk/branch pixels (default: red >= green, i.e. brown).
 //                   u, v = where the spot is in the square (0..1 across, 0..1 down)
 //   trunkTop        painted trees: wood below this height (0 = top, 1 = bottom) is trunk "#"
@@ -28,11 +29,20 @@
 //                   in a leafColour result, e.g. [r,g,b,1], keeps that leaf out of it (used for blossom)
 //   fruit           { symbol: "*", colours: [[r,g,b], ...], stem: [r,g,b], count: 5, shape: [...] }: round fruits
 //                   hanging on stems inside the crown (shape defaults to FRUIT_SHAPE below)
+//   leafChar(s)     returns the symbol for a leaf from the same sample `s` that leafColour gets, so the symbol can follow the
+//                   leaf's tier (falling leaves keep the symbol of the leaf they came from)
 //   leafSet         a string of symbols, e.g. "0123456789": each leaf (and falling leaf) is a random one of them
 //   leafScale       draw leaf symbols bigger (1 = normal, 1.4 = 40% bigger). Falling leaves follow.
 //   leafDy          nudge leaf symbols down, in cell heights (useful for `*`, which sits high)
 //   glow            glow strength (default 0.26, 0 = off)
+//   faces           [[x, y, radius], ...]: turn round crowns into big smileys (eyes and smile in `faceColour`, or left empty without one;
+//                   `faceSymbols: [eye, smile]` gives them their own symbols; `faceRim: { colour, symbol }` borders each ball). x, y are the
+//                   ball's middle and radius its size, as fractions of the cropped picture (radius of its width). List the
+//                   balls nearest the viewer first. Needs `crop`. See faces.js.
+//   minFill         how much of a cell the picture must cover for the cell to get a symbol (default 0.4). Lower it (0.2)
+//                   for trees with very thin trunks or branches, so they do not break into pieces
 import { clamp, mix, rgb, rng, drawGlow, hasFilter, register } from "./engine.js";
+import { paintFaces } from "./faces.js";
 
 var COLS = 100, SWAY = 0.45, SHIMMER = 0.55;
 var HALF = 0.5, MAXH = 3, MAX_PARTS = 420;
@@ -89,6 +99,7 @@ export function makeTree(cfg) {
   var FALL_CHANCE = cfg.fallChance === undefined ? 0.28 : cfg.fallChance;
   var AMBIENT_RATE = cfg.ambientRate || 7;
   var SKY = cfg.ambient === "sky";
+  var MIN_FILL = cfg.minFill || 0.4;
 
   function fallColour() { var f = FALL[(Math.random() * FALL.length) | 0]; return rgb(f[0], f[1], f[2]); }
 
@@ -104,6 +115,7 @@ export function makeTree(cfg) {
     var pile = [], pileH = [], pileTotal = 0, decayAcc = 0;
     var bend = 0, bendV = 0, windX = 0, windMag = 0, pvx = 0, pvy = 0;
     var lastPX = null, lastPY = 0, lastPT = 0, shedAcc = 0, dragging = false;
+    var bounds = null;                                      // where the drawn tree starts and ends across the square (px), for the carousel's spacing
     var ext = 0;                                            // wind pushed in from outside (the carousel sliding)
 
     function build() {
@@ -132,10 +144,10 @@ export function makeTree(cfg) {
           for (var j = 0; j < K; j++) for (var i = 0; i < K; i++) {
             var p = ((r * K + j) * W + (c * K + i)) * 4;
             var R = data[p], G = data[p + 1], B = data[p + 2];
-            if (cfg.paper ? cfg.paper(R, G, B) : (R > 236 && G > 236 && B > 236)) continue;   // paper
+            if (cfg.paper ? cfg.paper(R, G, B, (c * K + i + 0.5) / W, (r * K + j + 0.5) / off.height) : (R > 236 && G > 236 && B > 236)) continue;   // paper
             sr += R; sg += G; sb += B; n++;
           }
-          if (n < K * K * 0.4) continue;                    // no stray edge symbols
+          if (n < K * K * MIN_FILL) continue;                    // no stray edge symbols
           sr /= n; sg /= n; sb /= n;
 
           var isBrown = cfg.isWood ? cfg.isWood(sr, sg, sb, (c + 0.5) / COLS, (r + 0.5) / rows) : sr >= sg;
@@ -155,7 +167,9 @@ export function makeTree(cfg) {
             if (cfg.woodRamp) { var wc = ramp(cfg.woodRamp, (sr - 85) / 50); ce.col = rgb(wc[0], wc[1], wc[2]); }
             else ce.col = rgb(qr, qg, qb);
           } else {
-            var lc = cfg.leafColour({ r: sr, g: sg, b: sb, qr: qr, qg: qg, qb: qb, lum: lum, shade: clamp((sg - 105) / 100, 0, 1) }, ce.r1, ce.r2);
+            var spot = { r: sr, g: sg, b: sb, qr: qr, qg: qg, qb: qb, lum: lum, shade: clamp((sg - 105) / 100, 0, 1) };
+            var lc = cfg.leafColour(spot, ce.r1, ce.r2);
+            if (cfg.leafChar) ce.ch = cfg.leafChar(spot);          // the symbol can depend on the leaf's tier
             if (typeof lc === "string") ce.col = lc; else { ce.col = rgb(lc[0], lc[1], lc[2]); ce.c3 = lc; }
           }
         }
@@ -190,6 +204,9 @@ export function makeTree(cfg) {
         var isTrunk = cfg.trunkTop !== undefined ? (ck.row + 0.5) / rows >= cfg.trunkTop : ck.row >= lowestLeafRow;
         ck.ch = isTrunk ? SYM.trunk : SYM.branch;
       }
+      // Round crowns that should become smileys: mark the eyes and smile on each ball (see faces.js).
+      if (cfg.faces && cfg.crop) cells = paintFaces(cells, cfg.faces, S, fw, fh, cellW, cellH, cfg.faceColour ? rgb(cfg.faceColour[0], cfg.faceColour[1], cfg.faceColour[2]) : null, cfg.faceSymbols || null,
+          cfg.faceRim ? { colour: rgb(cfg.faceRim.colour[0], cfg.faceRim.colour[1], cfg.faceRim.colour[2]), symbol: cfg.faceRim.symbol } : null);
       // Every tree stands on the same line: slide the whole tree up or down (whole rows only) so its
       // lowest wood cell sits on GROUND_ROW. This keeps the bottoms of all trees aligned in the carousel.
       var lowestWood = -1;
@@ -298,14 +315,17 @@ export function makeTree(cfg) {
       grid = new Array(rows * COLS);                        // which cell sits at each grid spot (null = empty)
       for (var gi = 0; gi < grid.length; gi++) grid[gi] = null;
       for (var gk = 0; gk < cells.length; gk++) grid[cells[gk].row * COLS + cells[gk].col_i] = cells[gk];
+      var bl = COLS, br = -1;                               // the carousel spaces trees by what is actually drawn, not by the empty square
+      for (var bi = 0; bi < cells.length; bi++) { if (cells[bi].col_i < bl) bl = cells[bi].col_i; if (cells[bi].col_i > br) br = cells[bi].col_i; }
+      bounds = br >= 0 ? { left: bl * cellW, right: (br + 1) * cellW } : null;
       groundY = maxY + cellH * 0.6;
       pile = []; pileH = []; pileTotal = 0;
       for (var cc = 0; cc < COLS; cc++) { pile.push([]); pileH.push(0); }
     }
 
-    function addLeaf(x, y, vx, vy, col) {
+    function addLeaf(x, y, vx, vy, col, ch) {
       parts.push({ x: x, y: y, vy: vy, vx: vx, ph: Math.random() * 6.283, age: 0, col: col, w: 0.7 + Math.random() * 0.6,
-                   ch: LEAF_SET ? LEAF_SET.charAt((Math.random() * LEAF_SET.length) | 0) : SYM.fall });
+                   ch: ch || (LEAF_SET ? LEAF_SET.charAt((Math.random() * LEAF_SET.length) | 0) : SYM.fall) });
     }
     function randLeafCell() {
       for (var tries = 0; tries < 40; tries++) {
@@ -334,7 +354,7 @@ export function makeTree(cfg) {
       var vy = (46 + Math.random() * 34) * (S / 600);
       if (SKY) { addLeaf(Math.random() * S, -6, 0, vy * 0.7, fallColour()); return; }
       var c = randLeafCell(); if (!c) return;
-      addLeaf(c.x, c.y, 0, vy, fallColour());
+      addLeaf(c.x, c.y, 0, vy, fallColour(), cfg.leafChar ? c.ch : null);
     }
 
     function frame(now) {
@@ -356,7 +376,7 @@ export function makeTree(cfg) {
       while (shedAcc >= 1) {
         shedAcc -= 1;
         var sc2 = randLeafCell();
-        if (sc2 && parts.length < MAX_PARTS) addLeaf(sc2.x, sc2.y, (Math.random() - 0.5) * 20 * sc, (10 + Math.random() * 25) * sc, shedColour(sc2));
+        if (sc2 && parts.length < MAX_PARTS) addLeaf(sc2.x, sc2.y, (Math.random() - 0.5) * 20 * sc, (10 + Math.random() * 25) * sc, shedColour(sc2), cfg.leafChar ? sc2.ch : null);
       }
       decayAcc += dt;
       if (decayAcc > 0.35 && pileTotal > 50) {
@@ -470,7 +490,7 @@ export function makeTree(cfg) {
 
     if (hasImage) { img.onload = function () { ready = true; build(); }; img.src = cfg.image; }
 
-    return { resize: resize, frame: frame, drive: function (w) { ext = w; } };
+    return { resize: resize, frame: frame, drive: function (w) { ext = w; }, bounds: function () { return bounds; } };
   }
 
   register({ id: cfg.id, title: cfg.title, hint: cfg.hint || "hold + drag, press to shake", create: create });

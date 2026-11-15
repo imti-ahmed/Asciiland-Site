@@ -6,18 +6,24 @@ import { pieces } from "./engine.js";
 import "./counter.js";
 import "./brand.js";
 import "./menus.js";
+import "./sound.js";
 
 // Pieces show in this order. Add new ones here.
 import "./pieces/spring-tree.js";
 import "./pieces/maple.js";
 import "./pieces/pine.js";
+import "./pieces/blue-tree.js";
+import "./pieces/smiley-tree.js";
 import "./pieces/terracotta-tree.js";
 import "./pieces/pink-tree.js";
 import "./pieces/golden-tree.js";
+import "./pieces/coral-tree.js";
+import "./pieces/mushroom-tree.js";
+import "./pieces/candy-tree.js";
 
 // Biggest size (in pixels) any tree is drawn at. Change this one number to make trees bigger or smaller.
 var MAX_ART_SIZE = 600;
-var GAP = -150;             // space between trees, in pixels (negative = the empty edges overlap, trees sit closer)
+var TREE_GAP = 120;         // the empty space between the drawn parts of two neighbouring trees, in pixels. Equal for every pair.
 // The slide is a spring: it speeds up, overshoots a touch and settles. Higher STIFFNESS = snappier,
 // higher DAMPING = less bounce.
 var STIFFNESS = 60, DAMPING = 10;
@@ -26,7 +32,9 @@ var SWAY_PUSH = 0.4;        // how hard the moving row pushes the trees to sway 
 
 var stage = document.getElementById("stage");
 var slots = [];             // { canvas, inst }
-var n = 0, size = 0, spacing = 0;
+var n = 0, size = 0;
+var P = [], L = 1;          // where each tree's drawn middle sits along the loop, and the loop's total length (px)
+var boundsKey = "";         // changes when a tree finishes loading, so the spacing is worked out again
 var pos = 0, posV = 0;      // which tree is in the middle (a fraction while sliding) and its speed; never wraps back
 var target = 0;             // the tree we are heading for
 var introDone = false;      // set once the page-load animation has finished
@@ -46,43 +54,90 @@ function addSlot(piece) {
   slots.push({ canvas: canvas, inst: inst });
 }
 
-// Make sure the loop is long enough that its jump point (half a loop away) is beyond the screen edge.
+// The drawn part of a tree (not its empty square): how wide it is, and where its middle is inside the square.
+function drawn(i) {
+  var b = slots[i].inst.bounds();
+  if (!b) b = { left: size * 0.15, right: size * 0.85 };     // until the picture has loaded, a guess
+  return { w: b.right - b.left, mid: (b.left + b.right) / 2 };
+}
+
+// Line the trees up so the gap between the DRAWN parts of neighbours is the same everywhere (TREE_GAP). Each tree's
+// middle is P[i] along the loop; L is the loop's length, so the last tree is followed by the first again.
+function spaceTrees() {
+  var i, w, prevHalf = 0;
+  P = [];
+  for (i = 0; i < n; i++) {
+    w = drawn(i).w;
+    P.push(i === 0 ? 0 : P[i - 1] + prevHalf + TREE_GAP + w / 2);
+    prevHalf = w / 2;
+  }
+  L = P[n - 1] + prevHalf + TREE_GAP + drawn(0).w / 2;
+}
+
+// The loop must be long enough that its jump point (half a loop away) is beyond the screen edge, so nothing pops.
 // The count is a multiple of the number of pieces, so the pattern repeats cleanly across the jump.
 function ensureSlots() {
-  var perSide = Math.ceil((stage.clientWidth / 2 + size) / spacing) + 1;
-  var need = Math.max(MIN_SLOTS, perSide * 2);
+  var need = Math.max(MIN_SLOTS, Math.ceil((stage.clientWidth + 2 * size) / (size * 0.55 + TREE_GAP)));
   need = Math.ceil(need / pieces.length) * pieces.length;
   while (slots.length < need) addSlot(pieces[slots.length % pieces.length]);
   n = slots.length;
+  spaceTrees();
+  while (L < stage.clientWidth + 2 * size + 100) {            // still too short: add another round of pieces
+    for (var k = 0; k < pieces.length; k++) addSlot(pieces[slots.length % pieces.length]);
+    n = slots.length;
+    spaceTrees();
+  }
 }
 
-// Shortest signed distance, in places, from the middle to tree i (between -n/2 and n/2).
+// Shortest signed distance, in places, from the middle to tree i (between -n/2 and n/2). Used to order the intro.
 function offset(i) {
   var d = (i - pos) % n;
   if (d < -n / 2) d += n; else if (d >= n / 2) d -= n;
   return d;
 }
 
+// Where the loop's middle is right now: between the drawn middles of the two trees `pos` lies between.
+function centreAt(p) {
+  var k = Math.floor(p), f = p - k;
+  function at(j) { var m = Math.floor(j / n); return P[j - m * n] + m * L; }
+  return at(k) + f * (at(k + 1) - at(k));
+}
+
+// Pixels from the screen's middle to the drawn middle of tree i (the nearest copy of it around the loop).
+function screenDist(i, c) {
+  var m = Math.round((pos - i) / n);
+  return P[i] + m * L - c;
+}
+
 function place() {
-  var mid = stage.clientWidth / 2;
+  var mid = stage.clientWidth / 2, c = centreAt(pos);
   for (var i = 0; i < n; i++) {
-    var x = mid + offset(i) * spacing - size / 2;
+    var x = mid + screenDist(i, c) - drawn(i).mid;
     slots[i].canvas.style.transform = "translate(" + x.toFixed(2) + "px, -50%)";
   }
 }
 
 // A tree is "on screen" (or about to be) when any part of it is within the window plus a half-tree margin.
 function onScreen(i) {
-  return Math.abs(offset(i) * spacing) < stage.clientWidth / 2 + size;
+  return Math.abs(screenDist(i, centreAt(pos))) < stage.clientWidth / 2 + size;
 }
 
 function layout() {
   size = sizeOf();
-  spacing = Math.max(40, size + GAP);
   slots.forEach(function (s) {
     s.canvas.style.width = s.canvas.style.height = size + "px";
     s.inst.resize(size);
   });
+  ensureSlots();
+  place();
+}
+
+// Pictures load a moment after the page starts. When one finishes, its drawn width becomes known: space again.
+function checkBounds() {
+  var key = "";
+  for (var i = 0; i < n; i++) { var b = slots[i].inst.bounds(); key += b ? Math.round(b.left) + ":" + Math.round(b.right) + "," : "-,"; }
+  if (key === boundsKey) return;
+  boundsKey = key;
   ensureSlots();
   place();
 }
@@ -104,6 +159,7 @@ var last = performance.now();
 
 function loop(now) {
   var dt = Math.min(0.1, (now - last) / 1000); last = now;
+  checkBounds();
 
   // spring toward the target tree. Stepped in small fixed slices so a slow frame never makes it jump.
   if (pos !== target || posV !== 0) {

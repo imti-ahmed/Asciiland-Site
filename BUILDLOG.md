@@ -9,6 +9,70 @@ Newest entry on top. Each entry: date, what changed, anything to remember.
 - Decide on page title/intro wording and overall look of the grid.
 - Per-piece tuning controls if wanted (shake strength, leaf count, pile size, wind sensitivity).
 
+## 2026-11-15 — Leaf rustle on press
+- Added the owner's leaf rustle sound (5 seconds, 120 KB) as `assets/sounds/leaf-rustle.mp3`. It plays whenever any tree is pressed (mouse or touch), over the background forest sound, which keeps looping underneath.
+- It follows the Sound pill (silent on "Sound Off"). Presses closer together than 0.12 seconds do not start another one; otherwise rustles can overlap. Volume is `RUSTLE_VOLUME` in `js/sound.js` (first 0.8, then lowered to 0.4, 0.1 and finally 0.05 at the owner's request).
+- Speed: the rustle first used a plain audio element, which lagged on a press. It is now decoded once at page load and played from memory with the Web Audio API, so it starts at once. (The very first press also has to wake the browser's audio, which can take a moment.) The background loop is unchanged.
+- Cropped (owner's request): 0.5 seconds are cut off the start (first 1 second, then 0.05, then 0.5) and 1 second off the end of the clip, so about 3.6 seconds play, with a quick fade-in and a fade-out at the cuts. (First read wrongly as "keep the first 1s and last 2.5s"; the owner meant cut those, then asked to cut only 1 second at the end instead of 2.5.) This is done in the page (`crop()` in `js/sound.js`, `RUSTLE_CUT_START_S` / `RUSTLE_CUT_END_S`); the mp3 file itself is unchanged, so the full clip is still there to re-crop.
+- The tree's own shake and falling leaves are unchanged. Checked: `npm run build` succeeds and bundles both sounds. Not checked in a browser (sound can only be judged by ear).
+
+## 2026-11-15 — Background sound
+- Added the owner's sound effect as a quiet loop in the background (`VOLUME` 0.5 in `js/sound.js`) to give the trees a natural feel. It is a local file: no new network call. First it was a recording of wind in tree branches; the owner then swapped it for an autumn forest atmosphere recording (30 seconds, 720 KB), now `assets/sounds/forest-ambience.mp3`.
+- The Sound pill controls it: "Sound On" plays, "Sound Off" fades it out. Browsers do not allow sound before the visitor has interacted, so it starts on the first click, tap or key press (and at once if the browser allows). It fades in over 1.5 seconds, and pauses while the tab is hidden.
+- A plain loop may have a tiny gap at the join (MP3 files have a little silence at their ends). If it is noticeable, the fix is to cross-fade two copies, or to trim the file.
+- Checked: `npm run build` succeeds and bundles the file. Not checked in a browser (sound can only be judged by ear).
+
+## 2026-11-15 — SOUND pill
+- Added a white pill after Next in the bottom bar (`#sound` in `index.html`), in the same style as Back and Next. It reads "Sound On" (written like the other pills) and switches to "Sound Off" when clicked, and back again (`js/sound.js`). It starts on at every page load. (A version that always stayed on, and an all-capitals version, were tried first.)
+- It sits in its own group, 36px from the Back/Next pills: the same gap as between the visitor pill and Back/Next (the `.bar` gap).
+- The pill now controls real sound, see the Background sound entry above. Not in the Figma design: added at the owner's request.
+- Checked: `npm run build` succeeds. Not checked in a browser.
+
+## 2026-11-15 — Smiley Tree border, Candy Tree trunk
+- Smiley Tree: every ball now has a darker yellow border drawn with `\` (hatching against the `/` leaves). New `faceRim: { colour, symbol }` setting in `js/faces.js` / `js/tree.js`; it only touches the outer edge of each visible ball.
+- Candy Tree: the whole trunk is now `|` (the base was `#`). This is the tree to the left of the Spring Tree ("summer tree", see the Pine entry) in the loop, since the loop wraps.
+- Checked: `npm run build` succeeds. Not checked in a browser.
+
+## 2026-11-15 — Smiley Tree
+- Added `js/pieces/smiley-tree.js` and `assets/logo-sheet.js` (a new sheet of nine green tree logos; this is the 8th, bottom row middle). Placed right after the Blue Tree in the carousel.
+- The owner's twist: each round group of leaves becomes a big smiley. New `js/faces.js` and a `faces` setting: every ball is listed as [x, y, radius] (measured off the picture, nearest first), and two eyes and a smile are marked on it (first carved out as gaps, then changed to brown symbols). Eight balls, so eight smileys; the small pale ones behind the others only show the part of the face that is not covered.
+- Colours (owner's change): leaves in the yellow range (pale yellow, yellow, golden); the eyes and smile are bright red (`faceColour`; brown and red leaves were tried), not gaps, drawn with the same `/` as the leaves (`@`/`0` were tried), and are never shaken loose. Leaves `/`, trunk `|`. Other trees are unaffected (no `faces` setting = unchanged).
+- The trunk's base was ragged (the curved roots are thinner than a symbol): the piece now uses `minFill: 0.2` and a small root flare so the bottom is whole.
+- Checked: printed the carved cell layout as text in Node (faces show), `npm run build` succeeds. Not checked in a browser.
+
+## 2026-11-15 — Candy Tree
+- Added `js/pieces/candy-tree.js` and `assets/candy-tree.js` (the owner's candy tree: five swirly round crowns on a bendy brown trunk). Last in the carousel, after the Mushroom Tree.
+- Exception to the three-leaf-colours rule (the owner chose a tree whose point is its colourful balls): each ball keeps its own hue (pink, orange, teal, yellow, purple) with the picture's light/dark shading, brightened. Leaves `/`, trunk `#`. Noted in `CLAUDE.md`.
+- The grey backdrop and the faint "pngtree" watermark are dropped as background; the white shine spots on the balls are left as holes.
+- Checked: printed the cell layout as text in Node (trunk and branches found, balls stay leaves), `npm run build` succeeds. Not checked in a browser.
+
+## 2026-11-15 — Mushroom Tree
+- Added `js/pieces/mushroom-tree.js` and `assets/fantasy-sheet.js` (a new sheet of three painted trees; this is the bottom-left one). Last in the carousel, after the Coral Tree.
+- Three leaf colours from the picture's areas: light pink dome, mid pink, dark purple stripes. The near-black trunk and branches are wood (lifted a little brighter). Leaves are a random mix of `(` and `)` (owner's choice; `^`, `x`, `+` and the double quote were tried first), trunk `#`. The grey backdrop and patch are dropped as background.
+- New engine setting `minFill` (default 0.4 as before): how much of a cell the picture must cover to get a symbol. This tree uses 0.2 because its trunk and branches are thinner than a symbol and broke into pieces. Other trees are unaffected.
+- The other two trees on that sheet (green bonsai-like, blue) are not used yet.
+- Checked: printed the cell layout as text in Node, `npm run build` succeeds. Not checked in a browser.
+
+## 2026-11-15 — Even gaps between trees
+- The gap between trees looked uneven (e.g. Blue Tree and Terracotta Tree): every tree sat in an equal square, but trees fill their square differently. Now the carousel spaces trees by what is actually drawn: the empty space between the drawn parts of any two neighbours is the same (`TREE_GAP` at the top of `js/main.js`, now 120px; it started at 40px, which was too tight).
+- Each tree reports its drawn left and right edge (`bounds()` in `js/tree.js`); `js/main.js` places each tree's drawn middle along the loop. The slide still moves one tree at a time and wraps off-screen.
+- This replaces the old `GAP` setting (a fixed distance between square centres). If the gaps feel too tight or too loose overall, change `TREE_GAP`.
+- Checked: `npm run build` succeeds. Not checked in a browser.
+
+## 2026-11-15 — Blue Tree
+- Added `js/pieces/blue-tree.js` and `assets/blue-tree.js` (the owner's blue blossom illustration). Placed right after the Pine (the Christmas tree) in the carousel.
+- Three leaf colours from the picture's own areas: light blossom, bright blue crown, darker blue shade. Dark charcoal trunk (lifted a little brighter). Leaves are `0` (zero), trunk `|` (owner's choice). Falling blossom is light blue.
+- The faded clouds and trees behind it are dropped as background; the blue blossom pile at the foot is cut out by height, the same way as on the Coral Tree.
+- Checked: printed the cell layout as text in Node, `npm run build` succeeds. Not checked in a browser.
+
+## 2026-11-15 — Coral Tree
+- Added `js/pieces/coral-tree.js` and `assets/variety-sheet.js` (a new sheet of four flat trees; this is the top-left one). Last in the carousel, after the Golden Tree.
+- Three coral leaf colours (light, coral, deep red-orange), warm brown trunk, `/` leaves, `#` trunk. The bushes at the foot are cut out (the owner asked): `paper` in the piece drops anything non-brown below a height. For that, `paper` now also gets the spot's position (`u`, `v`); other trees ignore it.
+- Symbols (owner's choice): the leaves are slashes following the tiers for depth: front tier `/`, the tier behind `\`, the back edge `/` (`O`/`0` and `v`/`V` were tried and dropped; falling leaves keep their tier's symbol; new engine setting `leafChar`) and the whole trunk is `|`. (Digits and `*` were tried first.)
+- Layers: the three leaf colours follow the picture's own tiers (front coral, deeper tier, deep red edge behind) instead of lightness bands, so the stacked crowns stay visible as separate levels.
+- The other three trees on that sheet are not used yet.
+- Checked: `npm run build` succeeds. Not checked in a browser.
+
 ## 2026-11-14 — Page load animation
 - On load, in order: (1) the top bar and bottom bar fade in (0.45s), (2) the middle tree (Spring) at 0.28s, (3) the other on-screen trees in left-right pairs from 0.7s, 0.22s apart: the nearest left and right together, then the next pair. Anything off-screen is shown at the end.
 - Waits for the Aileron font before starting. People who ask for reduced motion see everything at once.
